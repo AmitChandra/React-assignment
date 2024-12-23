@@ -11,12 +11,9 @@
 }
 .content{
     flex-direction: column;
-    justify-content: space-around;
-    text-align: center;
+    background-color: beige;
     margin-top: 10px;
-    /* margin-left: 10px; */
     border: 1px solid grey;
-    /* justify-content: space-between; */
     align-items: center;
     display: flex;
 }

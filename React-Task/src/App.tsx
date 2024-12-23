@@ -57,7 +57,7 @@ const App = () => {
     <div className="container" onScroll={handleScroll}>
       <div className="row">
       {data.map((item : any, index: number) => (
-        <div className="col-4 content" key={index}>
+        <div className="col-3 content mx-1" key={index}>
           
           <img src={item?.avatar} className="img rounded float-start" />
           <p className="text-center">{item.first_name}</p>
