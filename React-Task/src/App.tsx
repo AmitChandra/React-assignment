@@ -1,35 +1,78 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useState, useEffect } from "react";
+import './App.css';
 
-function App() {
-  const [count, setCount] = useState(0)
+let pageIndex = 1;
+const App = () => {
+
+  const [data, setData] = useState<any>([]);
+  const [hasMore, setHasMore] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [totalDataCount, setTotalDataCount] = useState<number>(0);
+  const [totalPages, setTotalPages] = useState<number>(0);
+  const [itemsPerPage, setitemPerPage] = useState<number>(0);
+
+  useEffect(() => {
+    setLoading(true);
+    generateData(pageIndex);
+  },[]);
+
+  const generateData = (page: number) => {
+    fetch('https://reqres.in/api/users?page='+ page, {
+
+    })
+    .then((res) => res.json())
+    .then((data) =>{
+      console.log(data);
+      setitemPerPage(data.per_page)
+      setTotalDataCount(data.total);
+      setTotalPages(data.total_pages);
+      setData((appData: any) => [...appData, ...data.data]);
+      setLoading(false);
+    })
+    .catch((err) => {
+      setLoading(false)
+      console.log('Error: ' +err)
+    })
+  }
+
+  const loadMoreData = () => {
+    if (pageIndex >= totalPages) {
+      setHasMore(false);
+      setLoading(false);
+      return;
+    }
+      pageIndex = pageIndex + 1;
+      generateData(pageIndex)
+
+  };
+
+  const handleScroll = () => {
+    setLoading(true);
+    setTimeout(() => {
+    loadMoreData();
+    }, 2000);
+  }
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="container" onScroll={handleScroll}>
+      <div className="row">
+      {data.map((item : any, index: number) => (
+        <div className="col-4 content" key={index}>
+          
+          <img src={item?.avatar} className="img" />
+          <p className="text-center">{item.first_name}</p>
+          <p className="text-center">{item.last_name}</p>
+          <p className="text-center email">{item.email}</p>
+        </div>
+      ))}
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
 
-export default App
+      {loading && <p style={{ textAlign: "center" }}>Loading...</p>}
+      {/* {!hasMore && (
+        <p style={{ textAlign: "center" }}>You have reached the end!</p>
+      )} */}
+    </div>
+  );
+};
+
+export default App;
