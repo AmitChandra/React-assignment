@@ -59,7 +59,7 @@ const App = () => {
       {data.map((item : any, index: number) => (
         <div className="col-4 content" key={index}>
           
-          <img src={item?.avatar} className="img" />
+          <img src={item?.avatar} className="img rounded float-start" />
           <p className="text-center">{item.first_name}</p>
           <p className="text-center">{item.last_name}</p>
           <p className="text-center email">{item.email}</p>
