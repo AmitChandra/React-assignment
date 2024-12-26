@@ -1,62 +1,34 @@
 import React, { useState, useEffect } from "react";
 import './App.css';
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "./redux/store";
+import { fetchUsers } from "./features/userService";
 
-let pageIndex = 1;
-const App = () => {
+const App : React.FC = () => {
 
-  const [data, setData] = useState<any>([]);
-  const [hasMore, setHasMore] = useState<boolean>(true);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [totalDataCount, setTotalDataCount] = useState<number>(0);
-  const [totalPages, setTotalPages] = useState<number>(0);
-  const [itemsPerPage, setitemPerPage] = useState<number>(0);
+  const [pageIndex, setpageIndex] = useState<number>(1);
+
+  const dispatch = useDispatch<AppDispatch>();
+  const { users, loading, error, total_pages} = useSelector((state: RootState) => state.user);
 
   useEffect(() => {
-    setLoading(true);
-    generateData(pageIndex);
-  },[]);
-
-  const generateData = (page: number) => {
-    fetch('https://reqres.in/api/users?page='+ page, {
-
-    })
-    .then((res) => res.json())
-    .then((data) =>{
-      console.log(data);
-      setitemPerPage(data.per_page)
-      setTotalDataCount(data.total);
-      setTotalPages(data.total_pages);
-      setData((appData: any) => [...appData, ...data.data]);
-      setLoading(false);
-    })
-    .catch((err) => {
-      setLoading(false)
-      console.log('Error: ' +err)
-    })
-  }
+    if (pageIndex <= total_pages) {
+      dispatch(fetchUsers(pageIndex))
+    }
+  },[pageIndex]);
 
   const loadMoreData = () => {
-    if (pageIndex >= totalPages) {
-      setHasMore(false);
-      setLoading(false);
-      return;
-    }
-      pageIndex = pageIndex + 1;
-      generateData(pageIndex)
-
+     setpageIndex(pageIndex + 1);
   };
 
   const handleScroll = () => {
-    setLoading(true);
-    setTimeout(() => {
     loadMoreData();
-    }, 2000);
   }
 
   return (
     <div className="container" onScroll={handleScroll}>
       <div className="row">
-      {data.map((item : any, index: number) => (
+      {users.map((item : any, index: number) => (
         <div className="col-3 content mx-1" key={index}>
           
           <img src={item?.avatar} className="img rounded float-start" />
@@ -68,9 +40,7 @@ const App = () => {
       </div>
 
       {loading && <p style={{ textAlign: "center" }}>Loading...</p>}
-      {/* {!hasMore && (
-        <p style={{ textAlign: "center" }}>You have reached the end!</p>
-      )} */}
+      {error && <p>Error: {error}</p>}
     </div>
   );
 };
