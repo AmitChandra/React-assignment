@@ -31,7 +31,7 @@ const App : React.FC = () => {
       {users.map((item : any, index: number) => (
         <div className="col-3 content mx-1" key={index}>
           
-          <img src={item?.avatar} className="img rounded float-start" />
+          <img className="img rounded float-start" src={item?.avatar} alt={item?.first_name} />
           <p className="text-center">{item.first_name}</p>
           <p className="text-center">{item.last_name}</p>
           <p className="text-center email">{item.email}</p>
